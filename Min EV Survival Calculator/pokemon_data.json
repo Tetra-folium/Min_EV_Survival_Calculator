@@ -5648,7 +5648,7 @@
     },
     "Explosion": {
       "type": "Normal",
-      "base_power": 250,
+      "base_power": 500,
       "accuracy": 100
     },
     "Extreme Speed": {
@@ -5734,6 +5734,11 @@
     "Seismic Toss": {
       "type": "Fighting",
       "base_power": 1,
+      "accuracy": 100
+    },
+    "Self-Destruct": {
+      "type": "Normal",
+      "base_power": 400,
       "accuracy": 100
     },
     "Shadow Ball": {
