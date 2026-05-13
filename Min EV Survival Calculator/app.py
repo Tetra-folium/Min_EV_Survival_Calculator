@@ -169,8 +169,8 @@ if st.checkbox("Defender using Hidden Power?", key="def_hidden_power"):
             key="def_spd_iv",
         )
 
-
-if defender_item == None:
+leftovers = False
+if defender_item is None:
     leftovers = st.checkbox("Leftovers")
 
 sandstorm = st.checkbox("Sandstorm")
