@@ -39,6 +39,7 @@ class AttackConfig:
     stage: int
     ability: Optional[str]
     investment: StatInvestment
+    ability_active: Optional[bool] = False
     hidden_power_iv: Optional[int] = None
     hits_per_attack: List[int] = field(default_factory=list)
     item: Optional[str] = None
