@@ -61,13 +61,13 @@ def has_stab(types, move_type):
 
 
 def stat_hp(base, ev, level: int = 100, iv: int = 31):
-    return math.floor((2 * base + IV + (ev // 4)) * level / 100) + level + 10
+    return math.floor((2 * base + iv + (ev // 4)) * level / 100) + level + 10
 
 
 def stat_non_hp(base: int, ev: int, nature: float = 1.0, level: int = 100, iv: int = 31) -> int:
     return int(
         math.floor(
-            (math.floor((2 * base + IV + (ev // 4)) * level / 100) + 5) * nature
+            (math.floor((2 * base + iv + (ev // 4)) * level / 100) + 5) * nature
         )
     )
 
@@ -78,31 +78,54 @@ def apply_stat_stage(stat, stage):
     return int(stat * (2 / (2 - stage)))
 
 
+CONDITIONAL_ABILITIES: dict[str, dict] = {
+    "Blaze":    {"target": "base_power", "move_type": "Fire",  "multiplier": 1.5},
+    "Torrent":  {"target": "base_power", "move_type": "Water", "multiplier": 1.5},
+    "Overgrow": {"target": "base_power", "move_type": "Grass", "multiplier": 1.5},
+    "Swarm":    {"target": "base_power", "move_type": "Bug",   "multiplier": 1.5},
+    "Guts":     {"target": "atk_stat",   "move_type": None,    "multiplier": 1.5},
+    "Hustle":   {"target": "atk_stat",   "move_type": None,    "multiplier": 1.5},
+}
+
+
 def apply_attacker_ability_modifiers(
     atk_stat: int,
     move_type: str,
     ability: str | None,
     is_physical: bool,
     defender_ability: str | None = None,
+    ability_active: bool = False,
 ) -> int:
     
     if ability:
         if ability in {"Huge Power", "Pure Power"} and is_physical:
             atk_stat *= 2
 
-        if ability == "Blaze" and move_type == "Fire":
-            atk_stat = int(atk_stat * 1.5)
-
-        if ability == "Torrent" and move_type == "Water":
-            atk_stat = int(atk_stat * 1.5)
-
-        if ability == "Overgrow" and move_type == "Grass":
-            atk_stat = int(atk_stat * 1.5)
+        if ability_active:
+            cond = CONDITIONAL_ABILITIES.get(ability)
+            if cond and cond["target"] == "atk_stat":
+                if is_physical:
+                    atk_stat = int(atk_stat * cond["multiplier"])
 
     if defender_ability == "Thick Fat" and move_type in {"Fire", "Ice"}:
         atk_stat //=2
 
     return atk_stat
+
+
+def apply_attacker_ability_base_power_modifier(
+    base_power: int,
+    ability: str | None,
+    move_type: str,
+    ability_active: bool = False,
+) -> int:
+    if not ability or not ability_active:
+        return base_power
+    cond = CONDITIONAL_ABILITIES.get(ability)
+    if cond and cond["target"] == "base_power":
+        if cond["move_type"] is None or move_type == cond["move_type"]:
+            base_power = int(base_power * cond["multiplier"])
+    return base_power
 
 
 def apply_defender_ability_modifiers(
@@ -203,8 +226,8 @@ def apply_attacker_item_damage_multiplier(
     if not item:
         return damage
     boost = TYPE_BOOST_ITEMS.get(item)
-    if boost and move_type == boost.get(type):
-        damage = int(damage * boost.get(multiplier))
+    if boost and move_type == boost.get("type"):
+        damage = int(damage * boost.get("multiplier"))
     return damage
 
 
@@ -235,6 +258,7 @@ def compute_damage(
     Def: int = 0,
     SpD: int = 0,
     level: int = 100,
+    ability_active: bool = False,
 ) -> int:
 
     defender_types = get_types(defender)
@@ -264,6 +288,7 @@ def compute_damage(
         attacker_ability,
         is_physical,
         defender_ability,
+        ability_active,
     )
 
     atk_stat = apply_attacker_item_modifiers(
@@ -284,6 +309,13 @@ def compute_damage(
         move.base_power,
         attacker_item,
         move.type,
+    )
+
+    effective_base_power = apply_attacker_ability_base_power_modifier(
+        effective_base_power,
+        attacker_ability,
+        move.type,
+        ability_active,
     )
 
     base_damage = (
@@ -319,9 +351,11 @@ def build_damage_sequence(
     atk_nature: float = 1.1, spa_nature: float = 1.1,
     hidden_power_iv: int | None = None,
     attacker_item: str | None = None,
-    Def: int = 0,
-    SpD: int = 0,
+    attacker_ability: str | None = None,
+    defender_ability: str | None = None,
+    Def: int = 0, SpD: int = 0,
     level: int = 100,
+    ability_active: bool = False,
 ) -> list[list[int]]:
 
     is_physical = move.type in PHYSICAL_TYPES
@@ -333,15 +367,15 @@ def build_damage_sequence(
             move=move,
             stage=atk_stage if is_physical else spa_stage,
             defender=defender,
-            defender_ability=None,
-            attacker_ability=None,
+            defender_ability=defender_ability,
+            attacker_ability=attacker_ability,
             atk_ev=atk_ev, spa_ev=spa_ev,
             atk_nature=atk_nature, spa_nature=spa_nature,
             hidden_power_iv=hidden_power_iv,
             attacker_item=attacker_item,
-            Def=Def,
-            SpD=SpD,
+            Def=Def, SpD=SpD,
             level=level,
+            ability_active=ability_active,
         )
         sequence.append([dmg] * hits)
     return sequence
@@ -482,9 +516,11 @@ def find_min_ev_survival(req, POKEMON_DB, MOVE_DB):
                             atk_nature=phys.investment.nature,
                             hidden_power_iv=phys.hidden_power_iv,
                             attacker_item=phys.item,
-                            Def=Def,
-                            SpD=SpD,
+                            attacker_ability=phys.ability,
+                            defender_ability=req.defender.ability,
+                            Def=Def, SpD=SpD,
                             level=level,
+                            ability_active=phys.ability_active,
                         )
 
                         sequences.append(seq)
@@ -504,9 +540,11 @@ def find_min_ev_survival(req, POKEMON_DB, MOVE_DB):
                             spa_nature=spec.investment.nature,
                             hidden_power_iv=spec.hidden_power_iv,
                             attacker_item=spec.item,
-                            Def=Def,
-                            SpD=SpD,
+                            attacker_ability=spec.ability,
+                            defender_ability=req.defender.ability,
+                            Def=Def, SpD=SpD,
                             level=level,
+                            ability_active=spec.ability_active,
                         )
 
                         sequences.append(seq)
