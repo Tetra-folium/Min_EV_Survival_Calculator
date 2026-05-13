@@ -13,6 +13,7 @@ from calculator import (
     find_min_ev_survival,
     PHYSICAL_TYPES,
     TYPE_TO_BOOST_ITEMS,
+    CONDITIONAL_ABILITIES,
 )
 
 from data_loader import load_data
@@ -35,7 +36,8 @@ st.warning(
 
 POKEMON_DB, MOVE_DB = load_data()
 
-st.title(f"Gen {selected_gen} Min EV Survival Calculator")
+st.title(f"Gen 3 Min EV Survival Calculator")
+# st.title(f"Gen {selected_gen} Min EV Survival Calculator")
 
 pokemon_names = sorted(
     list(POKEMON_DB.keys())
@@ -250,6 +252,18 @@ if use_phys:
         phys_obj.abilities,
     )
 
+    phys_ability_active = False
+    if phys_ability in CONDITIONAL_ABILITIES:
+        cond = CONDITIONAL_ABILITIES[phys_ability]
+        label = (
+            f"{phys_ability} active "
+            f"({'base power' if cond['target'] == 'base_power' else 'Atk'} "
+            f"x{cond['multiplier']}"
+            + (f", {cond['move_type']} moves only" if cond["move_type"] else "")
+            + ")"
+        )
+        phys_ability_active = st.checkbox(label, key="phys_ability_active")
+
     # Items for physical attackers
 
     phys_item = None
@@ -336,6 +350,7 @@ if use_phys:
         move_name=phys_move,
         stage=phys_stage,
         ability=phys_ability,
+        ability_active=phys_ability_active,
         investment=StatInvestment(
             ev=phys_ev,
             nature=phys_nature,
@@ -405,21 +420,33 @@ if use_spec:
         spec_obj.abilities,
     )
 
+    spec_ability_active = False
+    if spec_ability in CONDITIONAL_ABILITIES:
+        cond = CONDITIONAL_ABILITIES[spec_ability]
+        label = (
+            f"{spec_ability} active "
+            f"({'base power' if cond['target'] == 'base_power' else 'SpA'} "
+            f"x{cond['multiplier']}"
+            + (f", {cond['move_type']} moves only" if cond["move_type"] else "")
+            + ")"
+        )
+        spec_ability_active = st.checkbox(label, key="spec_ability_active")
+
     # Items for special attackers.
 
     spec_item = None
     # Signature items
     if spec_attacker == "Marowak":
-        if st.checkbox("Thick Club", key="phys_thick_club"):
+        if st.checkbox("Thick Club", key="spec_thick_club"):
             spec_item = "Thick Club"
     elif spec_attacker == "Clamperl":
-        if st.checkbox("Deep Sea Tooth", key="phys_deep_sea_tooth"):
+        if st.checkbox("Deep Sea Tooth", key="spec_deep_sea_tooth"):
             spec_item = "Deep Sea Tooth"
     elif spec_attacker == "Pikachu":
-        if st.checkbox("Light Ball", key="phys_light_ball"):
+        if st.checkbox("Light Ball", key="spec_light_ball"):
             spec_item = "Light Ball"
     elif spec_attacker in ("Latios", "Latias"):
-        if st.checkbox("Soul Dew", key="phys_soul_dew"):
+        if st.checkbox("Soul Dew", key="spec_soul_dew"):
             spec_item = "Soul Dew"
     if spec_item is None:
         # Type-boosting items
@@ -489,6 +516,7 @@ if use_spec:
         move_name=spec_move,
         stage=spec_stage,
         ability=spec_ability,
+        ability_active=spec_ability_active,
         investment=StatInvestment(
             ev=spec_ev,
             nature=spec_nature,
@@ -530,6 +558,9 @@ if st.button("Calculate"):
             spikes_layers=spikes,
             spikes_mode=spikes_mode,
             item=defender_item,
+            hp_iv=defender_hp_iv,
+            def_iv=defender_def_iv,
+            spd_iv=defender_spd_iv,
         ),
 
         physical=physical_config,
