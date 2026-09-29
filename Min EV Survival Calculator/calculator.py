@@ -471,6 +471,11 @@ def find_min_ev_survival(req, POKEMON_DB, MOVE_DB):
     phys_plan = phys.hits_per_attack if phys else None
     spec_plan = spec.hits_per_attack if spec else None
 
+    floors = req.stat_floors
+    committed_ev = 0
+    if floors:
+        committed_ev = floors.atk_ev + floors.spa_ev + floors.spe_ev
+
     # -------------------------
     # Set Nature
     # -------------------------
@@ -501,6 +506,16 @@ def find_min_ev_survival(req, POKEMON_DB, MOVE_DB):
 
                 for hp_ev in range(0, 253, 4):
  
+                    defensive_ev = hp_ev + def_ev + spd_ev
+                    if defensive_ev + committed_ev > 510:
+                        continue
+
+                    if floors:
+                        if hp_ev  < floors.hp_ev : continue
+                        if def_ev < floors.def_ev: continue
+                        if spd_ev < floors.spd_ev: continue
+
+
                     max_hp = stat_hp(defender.base_hp, hp_ev, level, def_hp_iv)
  
                     sequences = []
@@ -563,12 +578,6 @@ def find_min_ev_survival(req, POKEMON_DB, MOVE_DB):
                         for s in sequences:
                             merged += s
                         sequences = [merged]
-
-                    floors = req.stat_floors
-                    if floors:
-                        if hp_ev < floors.hp_ev: continue
-                        if def_ev < floors.def_ev: continue
-                        if spd_ev < floors.spd_ev: continue
 
                     survives = all(
                         simulate_sequence(
