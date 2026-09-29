@@ -7,6 +7,7 @@ from models import (
     DefenderConfig,
     AttackConfig,
     StatInvestment,
+    StatFloors,
 )
 
 from calculator import (
@@ -193,6 +194,14 @@ spikes_mode = st.selectbox(
         ''')
 )
 
+st.header("Stat Floors (Optional)")
+floor_hp  = st.number_input("Min HP EVs", 0, 252, 0, step=4)
+floor_atk = st.number_input("Min Atk EVs", 0, 252, 0, step=4)
+floor_def = st.number_input("Min Def EVs", 0, 252, 0, step=4)
+floor_spa = st.number_input("Min SpA EVs", 0, 252, 0, step=4)
+floor_spd = st.number_input("Min SpD EVs", 0, 252, 0, step=4)
+floor_spe = st.number_input("Min Spe EVs", 0, 252, 0, step=4)
+
 # -------------------------
 # Physical
 # -------------------------
@@ -368,6 +377,7 @@ if use_phys:
             ev=phys_ev,
             nature=phys_nature,
         ),
+        atk_iv=phys_atk_iv,
         hidden_power_iv=phys_hidden_power_iv,
         hits_per_attack=phys_hits_per_attack,
         item=phys_item,
@@ -546,6 +556,7 @@ if use_spec:
             ev=spec_ev,
             nature=spec_nature,
         ),
+        spa_iv=spec_atk_iv,
         hidden_power_iv=spec_hidden_power_iv,
         hits_per_attack=spec_hits_per_attack,
         item=spec_item,
@@ -594,6 +605,14 @@ if st.button("Calculate"):
         allow_nature=allow_nature,
         combine_mode=combine_mode,
         level=level,
+        stat_floors=StatFloors(
+            hp_ev=floor_hp,
+            atk_ev=floor_atk,
+            def_ev=floor_def,
+            spa_ev=floor_spa,
+            spd_ev=floor_spd,
+            spe_ev=floor_spe,
+        )
     )
 
     spreads = find_min_ev_survival(req, POKEMON_DB, MOVE_DB)
