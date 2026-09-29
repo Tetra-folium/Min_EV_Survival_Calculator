@@ -644,3 +644,55 @@ if st.button("Calculate"):
                 f"{s.spd_ev}{spd_marker} SpD | "
                 f"Total: {total} EVs"
             )
+
+            # -------------------------
+            # Showdown Importable
+            # -------------------------
+
+            # Nature label
+            nature_map = {
+                "+Def": "Bold",
+                "+SpD": "Calm",
+                "Neutral": "Hardy",
+            }
+
+            # EV line - exclude 0 EV stats
+            ev_parts = []
+            if s.hp_ev             : ev_parts.append(f"{s.hp_ev} HP")
+            if floors and floor_atk: ev_parts.append(f"{floor_atk} Atk")
+            if s.def_ev            : ev_parts.append(f"{s.def_ev} Def")
+            if floors and floor_spa: ev_parts.append(f"{floor_spa} SpA")
+            if s.spd_ev            : ev_parts.append(f"{s.spd_ev} SpD")
+            if floors and floor_spe: ev_parts.append(f"{floor_spe} Spe")
+
+            # IV line - exclude 31 IVs
+            iv_parts = []
+            if defender_hp_iv  != 31: iv_parts.append(f"{defender_hp_iv} HP")
+            if defender_def_iv != 31: iv_parts.append(f"{defender_def_iv} Def")
+            if defender_spd_iv != 31: iv_parts.append(f"{defender_spd_iv} SpD")
+
+            # Build importable
+            lines = [f"{defender_name}"]
+            if defender_item:
+                lines[0] += f" @ {defender_item}"
+            if defender_ability:
+                lines.append(f"Ability: {defender_ability}")
+            if ev_parts:
+                lines.append(f"EVs: {' / '.join(ev_parts)}")
+            lines.append(f"{nature_map[s.nature]} Nature")
+            if iv_parts:
+                lines.append(f"IVs: {' / '.join(iv_parts)}")
+
+            st.code("\n".join(lines))
+
+        st.caption(
+            "Note: Natures shown are placeholders. "
+            "Bold is the default for +Def, "
+            "Calm is the default for +SpD, "
+            "and Hardy is the default for neutral. "
+            "Change the nature at your discretion."
+        )
+
+
+
+
