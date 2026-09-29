@@ -39,6 +39,8 @@ class AttackConfig:
     stage: int
     ability: Optional[str]
     investment: StatInvestment
+    atk_iv: int = 31
+    spa_iv: int = 31
     ability_active: Optional[bool] = False
     hidden_power_iv: Optional[int] = None
     hits_per_attack: List[int] = field(default_factory=list)
@@ -60,6 +62,16 @@ class DefenderConfig:
 
 
 @dataclass(frozen=True)
+class StatFloors:
+    hp_ev: int = 0
+    atk_ev: int = 0
+    def_ev: int = 0
+    spa_ev: int = 0
+    spd_ev: int = 0
+    spe_ev: int = 0
+
+
+@dataclass(frozen=True)
 class SurvivalRequest:
     defender: DefenderConfig
     physical: Optional[AttackConfig] = None
@@ -69,6 +81,7 @@ class SurvivalRequest:
     allow_nature: bool = False
     combine_mode: bool = False
     level: Optional[int] = None
+    stat_floors: Optional[StateFloors] = None
 
 
 @dataclass(frozen=True)
