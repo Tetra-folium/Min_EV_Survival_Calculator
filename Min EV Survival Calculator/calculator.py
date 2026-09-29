@@ -250,7 +250,9 @@ def compute_damage(
     defender_ability: str | None = None,
     attacker_ability: str | None = None,
     atk_ev: int = 252,
+    atk_iv: int = 31,
     spa_ev: int = 252,
+    spa_iv: int = 31,
     atk_nature: float = 1.1,
     spa_nature: float = 1.1,
     hidden_power_iv: int | None = None,
@@ -271,13 +273,13 @@ def compute_damage(
 
     if is_physical:
         atk_stat = apply_stat_stage(
-            stat_non_hp(attacker.base_atk, atk_ev, atk_nature, level),
+            stat_non_hp(attacker.base_atk, atk_ev, atk_nature, level, atk_iv),
             stage,
         )
         defense_stat = Def
     else:
         atk_stat = apply_stat_stage(
-            stat_non_hp(attacker.base_spa, spa_ev, spa_nature, level),
+            stat_non_hp(attacker.base_spa, spa_ev, spa_nature, level, spa_iv),
             stage,
         )
         defense_stat = SpD
@@ -348,6 +350,7 @@ def build_damage_sequence(
     compute_damage_fn,
     atk_stage: int = 0, spa_stage: int = 0,
     atk_ev: int = 252, spa_ev: int = 252,
+    atk_iv: int = 31, spa_ev: int = 31,
     atk_nature: float = 1.1, spa_nature: float = 1.1,
     hidden_power_iv: int | None = None,
     attacker_item: str | None = None,
@@ -557,6 +560,12 @@ def find_min_ev_survival(req, POKEMON_DB, MOVE_DB):
                         for s in sequences:
                             merged += s
                         sequences = [merged]
+
+                    floors = req.stat_floors
+                    if floors:
+                        if hp_ev < floors.hp_ev: continue
+                        if def_ev < floors.def_ev: continue
+                        if spd_ev < floors.spd_ev: continue
 
                     survives = all(
                         simulate_sequence(
