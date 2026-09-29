@@ -636,14 +636,25 @@ if st.button("Calculate"):
 
             def_marker = "+" if s.nature == "+Def" else ""
             spd_marker = "+" if s.nature == "+SpD" else ""
-            total = s.hp_ev + s.def_ev + s.spd_ev
+            defensive_total = s.hp_ev + s.def_ev + s.spd_ev
 
-            st.write(
+            offensive_total = 0
+            if st.session_state.enable_stat_floors:
+                offensive_total = floor_atk + floor_spa + floor_spe
+
+            total_investment = defensive_total + offensive_total
+
+            result_str = (
                 f"{s.hp_ev} HP / "
                 f"{s.def_ev}{def_marker} Def / "
                 f"{s.spd_ev}{spd_marker} SpD | "
-                f"Total: {total} EVs"
+                f"Total Defensive Investment: {total_investment} EVs"
             )
+
+            if offensive_total:
+                result_str += f" | Total Investment: {total_investment} EVs"
+ 
+            st.write(result_str)
 
             # -------------------------
             # Showdown Importable
