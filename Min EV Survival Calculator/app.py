@@ -648,7 +648,7 @@ if st.button("Calculate"):
                 f"{s.hp_ev} HP / "
                 f"{s.def_ev}{def_marker} Def / "
                 f"{s.spd_ev}{spd_marker} SpD | "
-                f"Total Defensive Investment: {total_investment} EVs"
+                f"Total Defensive Investment: {defensive_total} EVs"
             )
 
             if offensive_total:
