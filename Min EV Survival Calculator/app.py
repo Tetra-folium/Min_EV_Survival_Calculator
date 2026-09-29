@@ -658,12 +658,12 @@ if st.button("Calculate"):
 
             # EV line - exclude 0 EV stats
             ev_parts = []
-            if s.hp_ev             : ev_parts.append(f"{s.hp_ev} HP")
-            if floors and floor_atk: ev_parts.append(f"{floor_atk} Atk")
-            if s.def_ev            : ev_parts.append(f"{s.def_ev} Def")
-            if floors and floor_spa: ev_parts.append(f"{floor_spa} SpA")
-            if s.spd_ev            : ev_parts.append(f"{s.spd_ev} SpD")
-            if floors and floor_spe: ev_parts.append(f"{floor_spe} Spe")
+            if s.hp_ev                                          : ev_parts.append(f"{s.hp_ev} HP")
+            if st.session_state.enable_stat_floors and floor_atk: ev_parts.append(f"{floor_atk} Atk")
+            if s.def_ev                                         : ev_parts.append(f"{s.def_ev} Def")
+            if st.session_state.enable_stat_floors and floor_spa: ev_parts.append(f"{floor_spa} SpA")
+            if s.spd_ev                                         : ev_parts.append(f"{s.spd_ev} SpD")
+            if st.session_state.enable_stat_floors and floor_spe: ev_parts.append(f"{floor_spe} Spe")
 
             # IV line - exclude 31 IVs
             iv_parts = []
