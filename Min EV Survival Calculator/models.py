@@ -81,7 +81,7 @@ class SurvivalRequest:
     allow_nature: bool = False
     combine_mode: bool = False
     level: Optional[int] = None
-    stat_floors: Optional[StateFloors] = None
+    stat_floors: Optional[StatFloors] = None
 
 
 @dataclass(frozen=True)
