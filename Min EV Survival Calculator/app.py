@@ -169,6 +169,7 @@ if st.checkbox("Defender using Hidden Power?", key="def_hidden_power"):
             key="def_spd_iv",
         )
 
+
 leftovers = False
 if defender_item is None:
     leftovers = st.checkbox("Leftovers")
@@ -187,7 +188,7 @@ spikes_mode = st.selectbox(
     "Spikes Timing",
     ["Switch", "Revenge"],
     help=( '''
-        Switch = Switch -> Spikes damage -> Attack -> Sand, Leftovers, etc. -< Next Turn  
+        Switch = Switch -> Spikes damage -> Attack -> Sand, Leftovers, etc. -> Next Turn  
         Revenge = Switch -> Spikes damage -> Sand, Leftovers, etc. -> Next Turn
         ''')
 )
@@ -238,14 +239,26 @@ if use_phys:
             f"Each attack used incorporates all {fixed_hits} hits."
         )
 
-    phys_hidden_power_iv = None
+    phys_atk_iv = 31
     if phys_move.startswith("Hidden Power"):
         phys_hidden_power_iv = st.slider(
             "Atk IV (Hidden Power)",
             min_value=0,
             max_value=31,
             value=31,
+            key="phys_hidden_power_iv",
         )
+        phys_atk_iv = phys_hidden_power_iv
+    else:
+        phys_hidden_power_iv = None
+        if st.checkbox("Non-31 Atk IV?", key="phys_atk_iv_checkbox"):
+            phys_atk_iv = st.slider(
+                "Atk IV",
+                min_value=0,
+                max_value=31,
+                value=31,
+                key="phys_atk_iv",
+            )
 
     phys_ability = st.selectbox(
         "Physical Ability",
@@ -406,14 +419,26 @@ if use_spec:
             f"Each attack used incorporates all {fixed_hits} hits."
         )
 
-    spec_hidden_power_iv = None
+    spec_atk_iv = 31
     if spec_move.startswith("Hidden Power"):
         spec_hidden_power_iv = st.slider(
             "SpA IV (Hidden Power)",
             min_value=0,
             max_value=31,
             value=31,
+            key="spec_hidden_power_iv",
         )
+        spec_atk_iv = spec_hidden_power_iv
+    else:
+        spec_hidden_power_iv = None
+        if st.checkbox("Non-31 SpA IV?", key="spec_atk_iv_checkbox"):
+            spec_atk_iv = st.slider(
+                "SpA IV",
+                min_value=0,
+                max_value=31,
+                value=31,
+                key="spec_atk_iv",
+            )
 
     spec_ability = st.selectbox(
         "Special Ability",
