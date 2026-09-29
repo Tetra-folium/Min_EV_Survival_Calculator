@@ -202,7 +202,7 @@ floor_spa = 0
 floor_spd = 0
 floor_spe = 0
 
-if st.checkbox("Enable Stat Floors", ley="enable_stat_floors"):
+if st.checkbox("Enable Stat Floors", key="enable_stat_floors"):
     floor_hp  = st.number_input("Min HP EVs", 0, 252, 0, step=4)
     floor_atk = st.number_input("Min Atk EVs", 0, 252, 0, step=4)
     floor_def = st.number_input("Min Def EVs", 0, 252, 0, step=4)
