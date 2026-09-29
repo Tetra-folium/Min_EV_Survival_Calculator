@@ -675,6 +675,8 @@ if st.button("Calculate"):
             lines = [f"{defender_name}"]
             if defender_item:
                 lines[0] += f" @ {defender_item}"
+            elif leftovers:
+                lines[0] += f" @ Leftovers"
             if defender_ability:
                 lines.append(f"Ability: {defender_ability}")
             if ev_parts:
