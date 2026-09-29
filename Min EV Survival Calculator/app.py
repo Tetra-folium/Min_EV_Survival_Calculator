@@ -195,12 +195,20 @@ spikes_mode = st.selectbox(
 )
 
 st.header("Stat Floors (Optional)")
-floor_hp  = st.number_input("Min HP EVs", 0, 252, 0, step=4)
-floor_atk = st.number_input("Min Atk EVs", 0, 252, 0, step=4)
-floor_def = st.number_input("Min Def EVs", 0, 252, 0, step=4)
-floor_spa = st.number_input("Min SpA EVs", 0, 252, 0, step=4)
-floor_spd = st.number_input("Min SpD EVs", 0, 252, 0, step=4)
-floor_spe = st.number_input("Min Spe EVs", 0, 252, 0, step=4)
+floor_hp  = 0
+floor_atk = 0
+floor_def = 0
+floor_spa = 0
+floor_spd = 0
+floor_spe = 0
+
+if st.checkbox("Enable Stat Floors", ley="enable_stat_floors"):
+    floor_hp  = st.number_input("Min HP EVs", 0, 252, 0, step=4)
+    floor_atk = st.number_input("Min Atk EVs", 0, 252, 0, step=4)
+    floor_def = st.number_input("Min Def EVs", 0, 252, 0, step=4)
+    floor_spa = st.number_input("Min SpA EVs", 0, 252, 0, step=4)
+    floor_spd = st.number_input("Min SpD EVs", 0, 252, 0, step=4)
+    floor_spe = st.number_input("Min Spe EVs", 0, 252, 0, step=4)
 
 # -------------------------
 # Physical
